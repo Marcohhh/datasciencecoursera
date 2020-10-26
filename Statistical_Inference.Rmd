@@ -38,7 +38,16 @@ The answer is no, the events can simultaneously occur, and so are not mutually e
 
 
 ## 1.2 Probability mass functions
-A random variable is the numeric outcome of an experiment. 
+A *random variable* is the numerical outcome of an experiment. This could be either discrete, the value obtained by rolling a die, or continous. The way we work with discrete random variables is to assign a probability to every value that they can take. The way that we're going to work with continuous random variables is to assign probabilities to ranges that they can take.
+
+#### Example  
+The (0-1)  outcome of the flip of a coin is a discrete random variable, as well as the web site traffic on a given day. Another example is the hypertension status of a subject randomly drawn from a population, we assign the value 1 if it is exposed to hypertension and 0 conversely. 
+
+**Definition** A *probability mass function* evaluated at a value corresponds to the probability that a random variable takes that value. To be a valid *pmf* function, $p$ must satisfy:  
+
+1. It must always be larger than or equal to 0. 
+2. The sum of the possible values that the random variable can take has to add up to one. 
+
 
 ## 6.1 Binomial distribution
 
@@ -81,7 +90,7 @@ The quick answer in R is `qnorm(0.95,mean = mu, sd=sd)` but it's the same than $
 **Probability** A more generic question is: what is the probability that a $N(\mu,\sigma^2)$ RV is larger than $x$?  
 In R we obtain this probability with `1-pnorm(x,mean = mu, sd=sd)` but to understand deep what are we doing it is necessary to convert $x$ into how many standard deviations from the mean it is. Thus we take $$\frac{x-\mu}{\sigma}$$ This is simply $x$ expressed in how many standard deviations from the mean it is.
 
-### Example  
+#### Example  
 1. Assume the number of daily ad clicks for a company is approximately normally distributed with a mean of 1020 clicks per day and a standard deviation of 50. What's the probability of getting more than 1160 clicks in a day?  
 Well, 1160 is `(1160-1020)/50=2.8` standard deviation from the mean.
 ```{r}
