@@ -1,0 +1,339 @@
+---
+title: "Statistical Inference"
+author: "Marco Triacca"
+date: "28/8/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Aknowledgment
+These handouts follow the *Statistical Inference* course on [Coursera][1] from Jhon Hopkins University.  
+We aim to collect, in one single organized space, all the notions thought in this course and practiced with the tool we learned so far.  
+
+
+[1]: https://www.coursera.org/ "Coursera"
+
+
+## 1.1 Intoduction to probability
+The concept of probability measures the population quantity that summarizes the randomness. Given $\Omega$ space of events, some basic facts about probability are:  
+
+- $P(\emptyset)=0$
+- $P(\Omega)=1$
+- $\forall A \in \Omega \:\:\:\: P(A)=1-P(A^c)$
+- $\forall A,B \in\Omega\;$  s.t.  $\;A\cap B=\emptyset \implies P(A\cup B)=P(A)+P(B)$ 
+- if $\; A \subset B \;$ then $P(A)<P(B)$
+- $\forall A,B \in \Omega \implies \;\;P(A\cup B)=P(A)+P(B)-P(A\cap B)$ 
+
+#### Example  
+
+The National Sleep Foundation reports that around 3% of the American population has sleep afne, apnea. They also report around 10% of the North American and European population has restless leg syndrome. Let's assume, for the sake of argument, that these are probabilities from the same population.  
+Can we just simply add these probabilities, and conclude that about 13% of people have at least one sleep problem of these sorts in this population?  
+The answer is no, the events can simultaneously occur, and so are not mutually exclusive.
+
+
+## 1.2 Probability mass functions
+A random variable is the numeric outcome of an experiment. 
+
+## 6.1 Binomial distribution
+
+
+
+## 6.2 Normal distribution
+
+The Gaussian distribution with mean $\mu$ and variance $\sigma^2$ has **density function** $$(2\pi\sigma^2)^{-1/2}e^{-(x-\mu)^2/2\sigma^2}$$ 
+We use the notation $$X\sim N(\mu,\sigma^2)$$ to indicate a *Normal* random variable.  
+
+When $\mu=0$ and $\sigma=1$ we call it the **standard normal distribution**. 
+
+```{r, echo=FALSE}
+x <- seq(-3,3,by=0.1)
+bel <- 2*pi^(-1/2)*exp(-x^2/2)
+plot(x,bel, type = "l")
+grid()
+abline(v=c(-3,-2,-1,0,1,2,3))
+```
+
+The standard normal distribution is the model to refer when we work with normal distribution, just with a different standard deviation unit. 
+
+Now, in any normal distribution if we talke of one standard deviation from the mean then about the 34% of the mass should lie in there, so 68% lie in the interval $[\mu-\sigma,\mu +\sigma]$.  
+Let's now look at two standard deviations from the mean, in this case the probability mass associated with this interval is 95% and we get 2.5% in either tail. Last if we take three standard deviations from the mean we obtain a ptobability mass of 99%. 
+
+**OBSERVATION**  
+
+If $X \sim N(\mu,\sigma^2)$ then $$Z=\frac{X-\mu}{\sigma}\sim N(0,1)$$
+Conversely if $Z$ is standard normal $$X=\mu+\sigma Z\sim N(\mu,\sigma^2)$$
+  
+  
+**More facts about the normal density**
+
+1. $-1.28$, $-1.645$, $-1.96$ and $-2.33$ are the $10^{th}$, $5^{th}$, $2.5^{th}$ and $1^{st}$ percentiles of the standard normal distribution respectively. 
+2. By symmetry, $1.28$, $1.645$, $1.96$ and $2.33$ are the $90^{th}$, $95^{th}$, $97.5^{th}$ and $99^{th}$ percentiles of the standard normal distribution respectively.
+
+**Percentile** So the question now is: what is the $95^{th}$ percentile of a $N(\mu,\sigma^2)$ distribution? This would be the point such that 95% of the samples would be smaller than if we were to draw a sufficiently large sample.  
+The quick answer in R is `qnorm(0.95,mean = mu, sd=sd)` but it's the same than $\mu+1.645\sigma$.
+
+**Probability** A more generic question is: what is the probability that a $N(\mu,\sigma^2)$ RV is larger than $x$?  
+In R we obtain this probability with `1-pnorm(x,mean = mu, sd=sd)` but to understand deep what are we doing it is necessary to convert $x$ into how many standard deviations from the mean it is. Thus we take $$\frac{x-\mu}{\sigma}$$ This is simply $x$ expressed in how many standard deviations from the mean it is.
+
+### Example  
+1. Assume the number of daily ad clicks for a company is approximately normally distributed with a mean of 1020 clicks per day and a standard deviation of 50. What's the probability of getting more than 1160 clicks in a day?  
+Well, 1160 is `(1160-1020)/50=2.8` standard deviation from the mean.
+```{r}
+1-pnorm(1160,1020,50)
+# or pnorm(1160,1020,50, lower.tail=FALSE)
+1-pnorm(2.8)
+```
+2. Assume the number of daily ad clicks for a company is approximately normally distributed with a mean of 1020 clicks per day and a standard deviation of 50. What number of daily ad clicks would represent the one where 75% of days have fewer clicks(assuming days are indipendent and identically distributed)?  
+We know that the 50% of days have less than 1020 ad clicks and that 84% have less than 1070 ad clicks, thus the answer lies in this interval. 
+```{r}
+qnorm(0.75,1020,50)
+```
+
+
+ 
+
+## 6.3 Poisson distribution
+The Poisson distribution is used to model counts and its mask function is $$P(X=x;\lambda) = \frac{\lambda^xe^{-\lambda}}{x!}$$. The mean and variance of this distribution is $\lambda$. 
+We use this distribution to:  
+
+- model count data
+- model event-time or survival data
+- model contingency tables
+- approximate binomials when *n* and *p* is small
+
+### Count data
+Often the Poisson random variables are used to model rates. Let $X \sim Poisson(\lambda t)$ be a Poisson random variable, where 
+
+- $\lambda=E[X/t]$ is the expected count per unit of time
+- $t$ is the total monitoring time
+
+
+**Example**  
+The number of people that show up to a bus stop is Poisson with a mean of 2.5 people per hour. We watch the bus stop for four hours. What's the probability that three or fewer people show up the whole time? So that's just the Poisson probability of three, three, two, one, and zero.
+```{r}
+ppois(3, lambda = 2.5*4)
+```
+
+### Binomial approximation
+When *n* is large and *p* is small the Poisson distribution is an accurate approximation of the binomial. In this case  
+
+- $X \sim Binomial(n,p)$
+- $\lambda=np$
+- $n$ gets large
+- $p$ gets small
+
+**Example**  
+We flip a coin with success probability 0.01 five hundred times. What's the probability of two or fewer successes?
+```{r}
+pbinom(2, size = 500, prob = 0.01)
+```
+```{r}
+ppois(2, lambda = 500*0.01)
+```
+
+## 7.1 Asymptotics and LLN
+The following results allow us to talk about the large sample distribution of sample means of a collection of iid observations.   
+The first of this results is the *Law of Large Number*  
+
+- it says that the average limits to what its estimating, the population mean;
+- **example** $\bar{X}_n$ could be the average of the result of $n$ coin flips (i.e. the sample proportion of heads). As we flip a fair coin over and over, it eventually converges to the true probability of a head;
+
+**Law large numbers in action** 
+```{r}
+n <- 1000
+means <- cumsum(rnorm(n))/(1:n)
+plot(1:n,means, type="l")
+abline(h=0)
+grid()
+```
+
+Another example of LLN in action when we flip a coin.
+```{r}
+means <- cumsum(sample(0:1,n,replace = TRUE))/(1:n) 
+plot(1:n,means, type="l")
+abline(h=0.5)
+grid()
+```
+
+#### Discussion
+We say that an estimator is **consistent** if it converges to what you want to estimate. So, for example, the sample proportion from iid flip coin is consistent for the true success probability of a coin. In fact as you flip a coin over and over, the sample proportion of heads converges to the probability of getting head on that coin.  
+The LLN says that the sample mean of iid samples is consistent for the population mean. The sample variance and the sample standerd deviation of iid random variables are consistent as well.
+
+## 7.2 Asymptotics and CLT
+The *Central Limit Theorem* states that the distribution of averages of iid random variables becomes that of a standard normal as the sample size increases. 
+
+### Basic results
+If we take an estimate like the sample average $\bar{X}_n$ subtract off its population mean, $\mu$, and divide by its standard error $\sigma/\sqrt{n}$ $$ \frac{\bar{X}_n-\mu}{\sigma/\sqrt{n}}$$ then random variable limits to that of a standard normal. Moreover raplacing the population standard deviation, that is unknow, with the sample standard deviation, that is know, does not change the CLT.  
+The most useful way to think about Central Limit Theorem is to say that the sample average $\bar{X}_n$ is approximately normally distributed with a mean given by the population mean and a variance given by the standard error of the mean, $N(\mu,\sigma^2/n)$. 
+
+**Example**  
+Let $X_i$ be the outcome for die $i$, then note that $$\mu=E[x_i]=3.5$$ $$Var(X_i)=2.92$$ so the standard error, SE, is $$\sqrt{2.92/n}=1.71/\sqrt{n}$$  
+
+
+## 7.3 Asymptotics and confidence intervals 
+We know that the sample mean, $\bar{X}$, is approximately normal with mean $\mu$ and standard deviation $\sigma/\sqrt{n}$. So the probabilty that $\bar{X}$ is bigger than $\mu+2\sigma/\sqrt{n}$ or smaller than $\mu-2\sigma/\sqrt{n}$ is *5%*. We call $\bar{X}\pm2\sigma/\sqrt{n}$ a *95%* interval for $\mu$.  
+
+The actual interpretation of this is that if we were to repeatedly get samples of size $n$ from this population. Construct a confidence interval in each case. About *95%* of the intervals we obtained would contain $\mu$, the parameter that we're trying to estimate.
+
+
+**GALTON'S DATA**  
+Consider now a sample `x`  of son's height and take the mean plus or minus the 0.975th normal quantile times the standard error of the mean. Standard deviation of `x` divided by the square root of `n`, which is the length of the vector `x`. 
+```{r, eval=FALSE}
+library(UsingR)
+data(father.son)
+x <- father.son$sheight
+(mean(x)+c(-1,1)*qnorm(0.975)*sd(x)/sqrt(length(x)))/12
+```
+We divided by 12, so that the confidence interval will be in feet rather than inches, and get the confidence interval 5.710 to 5.738. So, **if we were willing to assume that the sons from this data were and ideal draw from a population of interest**, then the confidence interval for the average height of the sons would be 5.71 to 5.74.
+  
+  
+**PROP**
+Let $X_i$ be $0$ or $1$, with true success probability $p$ then $\sigma^2=p(1-p)$. The interval takes the form $$\hat{p}\pm z_{1-\alpha/2}\sqrt{\frac{p(1-p)}{n}}$$  
+We don't know $p$, it's what we want to estimate, but we would replace it by $\hat{p}$ in the standard error. This is a confidence interval that is called the **Wald** confidence intervals.  
+
+Since the max of $p(1-p)$ is in $p=1/2$ turns out that $2\sqrt{\frac{p(1-p)}{n}}\le\frac{1}{\sqrt{n}}$. So for *95%* intervals $$\hat{p}\pm\frac{1}{\sqrt{n}}$$ is a quick **CI estimate** for $p$.
+  
+### Binomial intervals
+Imagine you were running for political office and your campaign advisor told you that in a random sample of 100 likely voters, 56 intended to vote for you.  
+Can you relax? Do you have this race in the bag? Is 0.56 out of 100 sampled enough evidence to conclude that you'll likely get more than 50% of the vote?  
+  
+- 1/sqrt(100) = 0.1 so a back-of-the-envelope calculation gives an approximate 95% interval of 0.46 to 0.66;
+- rough guidelines is that you need 100 for one decimal place in a binomial experiment, 10,000 for two, and a million for three;
+
+```{r}
+round(1/sqrt(10^(1:6)),3)
+```
+
+Let's see how the standard formula get the same result as the R function **binom.test()**.
+```{r}
+0.56 + c(-1,1)*qnorm(0.975)*sqrt(0.56*0.44/100)
+```
+```{r}
+binom.test(56,100)$conf.int
+```
+
+
+**SIMULATION**  
+
+Here we simulate a flip coin with a certain success probabilty, over and over again, and calculate the percentage of times my walled interval covers the true coin probability that we used to generate the data. 
+
+```{r}
+n <- 20
+pvals <- seq(0.1,0.9,by=0.05)
+nosim <- 1000
+coverage <- sapply(pvals, function(p) {
+  phats <- rbinom(nosim, prob = p,size = n)/n
+  ll <- phats-qnorm(0.975)*sqrt(phats*(1-phats)/n)
+  ul <- phats+qnorm(0.975)*sqrt(phats*(1-phats)/n)
+  mean(ll<p & ul>p)
+})
+plot(pvals, coverage, type = "l", ylim=c(0.8,1))
+lines(pvals,rep(0.95,length(pvals)))
+```
+
+We see that the percentage doesn't behave as expected for all the tested success probabilty. This happens because the central limit theorem isn't as accurate, isn't as accurate as we need it to be for this specific value of *n* for coins with this specific true probability.
+
+**Problem**  *n* isn't large enough for the CLT to be applicable for many of the values of *p*.  
+**Quick Fix** Form the interval with $$\hat{p}=\frac{X+2}{n+4}$$ We obtain $\hat{p}$ with two successe and failures (Agresti/Coull interval).  
+
+
+First let's show thet coverage gets better with *n* larger.
+
+```{r}
+n <- 100
+pvals <- seq(0.1,0.9,by=0.05)
+nosim <- 1000
+coverage <- sapply(pvals, function(p) {
+  phats <- rbinom(nosim, prob = p,size = n)/n
+  ll <- phats-qnorm(0.975)*sqrt(phats*(1-phats)/n)
+  ul <- phats+qnorm(0.975)*sqrt(phats*(1-phats)/n)
+  mean(ll<p & ul>p)
+})
+plot(pvals, coverage, type = "l", ylim=c(0.8,1))
+lines(pvals,rep(0.95,length(pvals)))
+```
+
+Now we look back at the 20 case again, but now, when we calculate the confidence interval here, notice that we are adding two successes and two failures.
+
+```{r}
+n <- 20
+pvals <- seq(0.1,0.9,by=0.05)
+nosim <- 1000
+coverage <- sapply(pvals, function(p) {
+  phats <- (rbinom(nosim, prob = p,size = n)+2)/(n+4)
+  ll <- phats-qnorm(0.975)*sqrt(phats*(1-phats)/n)
+  ul <- phats+qnorm(0.975)*sqrt(phats*(1-phats)/n)
+  mean(ll<p & ul>p)
+})
+plot(pvals, coverage, type = "l", ylim=c(0.8,1))
+lines(pvals,rep(0.95,length(pvals)))
+```
+
+This case is a little better than the poor coverage of the Wald interval for certain values of the true probability. However this is not necessarily a good thing, as it implies that the interval's probabily too wide. Nonetheless **adding 2 successes and 2 failures interval should generally be used instead of the Wald interval**.
+
+### Poisson intervals
+
+Now we consider the case of a Poisson random variables. Its coverage (non sono sicuro di questa def) interval is $$E_{stimate} \pm z_{quantile}SE_{stimate}$$
+
+**Example**
+A nuclear pump failed 5 times out of 94.32 days, given 95% confidence interval for the failure rate per day. So we're going to assume that:  
+
+- the number of failures is Poisson, with failure rate $\lambda$ and $t$ being the number of days, $X \sim Poisson(\lambda t)$
+- the *Estimate* of the failure rate is the number of failures divided by the total monitoring time, $\hat{\lambda}=X/t$
+- the *variance* of this *Estimate* turns out to be $\lambda$ over $t$, $Var(\hat{\lambda})=\lambda/t$
+- $\hat{\lambda}/t$ is our variance estimate
+
+
+```{r}
+x <- 5
+t <- 94.32
+lambda <- x/t
+round(lambda+c(1,-1)*qnorm(0.975)*sqrt(lambda/t), 3)
+```
+
+
+In addition to doing a large sample interval, we can do an exact Poisson interval, and R has a function for doing it. It's **poisson.test()**. We give it the number of events and the monitoring time
+```{r}
+poisson.test(x,T=94.32)$conf
+```
+
+**SIMULATION**
+Let's see how this interval performs for lambda values near what we're estimating 
+
+```{r}
+lambdavalues <- seq(0.005,0.1,by=0.01)
+nosim <- 1000
+t <- 100
+coverage <- sapply(lambdavalues, function(lambda){
+  lhats <- rpois(nosim,lambda=lambda*t)/t
+  ll <- lhats-qnorm(0.975)*sqrt(lhats/t)
+  ul <- lhats+qnorm(0.975)*sqrt(lhats/t)
+  mean(ll< lambda & ul > lambda)
+})
+plot(lambdavalues, coverage, type = "l", ylim = c(0, 1.1))
+lines(lambdavalues,rep(0.95,length(lambdavalues)))
+```
+
+Once again we increase $t$ to 1000 in order to get better confidence interval 
+```{r, echo=FALSE}
+lambdavalues <- seq(0.005,0.1,by=0.01)
+nosim <- 1000
+t <- 1000
+coverage <- sapply(lambdavalues, function(lambda){
+  lhats <- rpois(nosim,lambda=lambda*t)/t
+  ll <- lhats-qnorm(0.975)*sqrt(lhats/t)
+  ul <- lhats+qnorm(0.975)*sqrt(lhats/t)
+  mean(ll< lambda & ul > lambda)
+})
+plot(lambdavalues, coverage, type = "l", ylim = c(0, 1.1))
+lines(lambdavalues,rep(0.95,length(lambdavalues)))
+```
+
+
+
