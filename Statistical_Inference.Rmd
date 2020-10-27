@@ -9,6 +9,7 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
 ```
 
 
@@ -30,8 +31,7 @@ The concept of probability measures the population quantity that summarizes the 
 - if $\; A \subset B \;$ then $P(A)<P(B)$
 - $\forall A,B \in \Omega \implies \;\;P(A\cup B)=P(A)+P(B)-P(A\cap B)$ 
 
-#### Example  
-
+**Example**  
 The National Sleep Foundation reports that around 3% of the American population has sleep afne, apnea. They also report around 10% of the North American and European population has restless leg syndrome. Let's assume, for the sake of argument, that these are probabilities from the same population.  
 Can we just simply add these probabilities, and conclude that about 13% of people have at least one sleep problem of these sorts in this population?  
 The answer is no, the events can simultaneously occur, and so are not mutually exclusive.
@@ -40,13 +40,60 @@ The answer is no, the events can simultaneously occur, and so are not mutually e
 ## 1.2 Probability mass functions
 A *random variable* is the numerical outcome of an experiment. This could be either discrete, the value obtained by rolling a die, or continous. The way we work with discrete random variables is to assign a probability to every value that they can take. The way that we're going to work with continuous random variables is to assign probabilities to ranges that they can take.
 
-#### Example  
+**Example**   
 The (0-1)  outcome of the flip of a coin is a discrete random variable, as well as the web site traffic on a given day. Another example is the hypertension status of a subject randomly drawn from a population, we assign the value 1 if it is exposed to hypertension and 0 conversely. 
 
-**Definition** A *probability mass function* evaluated at a value corresponds to the probability that a random variable takes that value. To be a valid *pmf* function, $p$ must satisfy:  
+**Definition** A *probability mass function* evaluated at a value corresponds to the probability that a discrete random variable takes that value. To be a valid *pmf* function, $p$ must satisfy:  
 
-1. It must always be larger than or equal to 0. 
-2. The sum of the possible values that the random variable can take has to add up to one. 
+1. always being larger than or equal to 0; 
+2. the sum of the possible values that the random variable can take has to add up to one. 
+
+**Example 1**   
+Let $X$ be a random variable that is the result of a die roll and $p$ the *pmf* associated with $X$, then $$  p(i)=1/6=P(X=i) \;\;\;\; \forall\: i \in \{1,...,6\}$$
+
+**Example 2 (Binomial)**  
+Let $X$ be a random variable that is the result of a flip coin, $X=0$ represent the tails and $X=1$ represent heads. Thus the *pmf* associated with $X$ is $$p(x)=(1/2)^x(1/2)^{1-x} \;\;\; \mbox{for} \;\; x=0,1$$  
+In case we have an unfair coin, with head probability $\theta$, then the *pmf* is $$p(x)=\theta^x(1-\theta)^{1-x} \;\;\; \mbox{for} \;\; x=0,1$$ 
+We can use the binomial distribution to simulate the probability for a person to have hypertension. The fact is that we don't know $\theta$ and we want estimate it using data.  
+
+
+## 1.3 Probability density function
+**Definition** A *probability density function* is a function associated with a continuous random variable which must satisfy:  
+
+1. being larger than or equal to zero everywhere;
+2. The total area under it must be one.  
+
+Areas under probability density functions correspond to probabilities for that random variable.
+
+**Example**  
+The distribution of QI has mean 100 and standard deviation of 15, that implies that the population follows a specific bell shaped looking curve. The probability that a person from that sample has an IQ between 100 and 115, is this area right here
+```{r, echo=FALSE, warning=FALSE}
+x <-  seq(50, 150,1)
+dat <-  data.frame(x, y=dnorm(x,100,15))
+ggplot(data = dat, mapping = aes(x = x, y = y)) +
+  geom_line()+
+  geom_area(mapping = aes(x = ifelse(x>100 & x< 115 , x, 0)), fill = "darkgrey") +
+  scale_x_continuous(limits=c(40,160), breaks = c(100,115))+
+  scale_y_continuous(labels = NULL)+
+  ylab("QI distribution")+
+  xlab(NULL)
+```
+Again the *pdf* is a statement about the population of intelligence quotients. It's not a statement about the data itself. We're going to use the data to evaluate that assumption and to evaluate statements about the population probability. 
+
+**Note** When we model probabilities for continuous random variables the probability that it takes any specific value is in fact zero because the area of a line is zero.
+
+**Example**  
+So let's work with a much simpler density i.e. $$f(x)=\begin{cases} 2x & \mbox{for} \;\;0<x<1 \\0 &\mbox{otherwise}\end{cases}$$ 
+Let's say it's the proportion of help calls that get addressed in a random day by a help line. Thus the probability that between 20% and 60% of the calls get addressed that day is given by this area:
+```{r,echo=FALSE}
+x <- seq(0,1,0.01)
+dat <- data.frame(x,y=2*x)
+ggplot(data=dat, mapping = aes(x=x,y=y))+
+  geom_line()+
+  geom_area(mapping = aes(x = ifelse(x>0.2 & x< 0.6 , x, 0)), fill = "darkgrey")+
+  scale_x_continuous(limits=c(0,2), breaks = c(0.2,0.6))+
+  scale_y_continuous(labels = NULL, limits=c(0,2))
+```
 
 
 ## 6.1 Binomial distribution
