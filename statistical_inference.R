@@ -1,10 +1,26 @@
 
 
-
-
-
+x <- c(1,2,43,2,14,67,8,90)
+y <- c(3,45,37,94,69,35,23,3)
+x+y
+median(x)
+median(y)
+mean(c(11,36))
+median(c(x,y))
 
 library(ggplot2)
+
+hist(x)
+hist(y)
+density(x)
+3.25
+((14+43)/2+(67+90)/2)/2
+
+
+
+
+
+
 
 
 
